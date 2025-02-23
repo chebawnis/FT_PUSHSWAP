@@ -6,7 +6,7 @@
 /*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/02/23 16:51:31 by adichou          ###   ########.fr       */
+/*   Updated: 2025/02/23 17:21:55 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,11 +84,65 @@ void	print_list(t_struct **head)
 	}
 }
 
+void rotate(t_struct **head)
+{
+	t_struct								 *first;
+	t_struct 								*tmp;
+	int 									i;
+
+	if (head == NULL || *head == NULL || (*head)->next == NULL)
+		return;
+	first = *head;
+	tmp = *head;
+	i = 0;
+	*head = first->next;
+	first->next = NULL;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = first;
+	tmp = *head;
+	while (tmp)
+	{
+		tmp->index = i;
+		tmp = tmp->next;
+		i++;
+	}
+}
+
+void r_rotate(t_struct **head)
+{
+	t_struct *prev;
+	t_struct *tmp;
+	int i;
+
+	if (head == NULL || *head == NULL || (*head)->next == NULL)
+		return;
+	prev = NULL;
+	tmp = *head;
+	i = 0;
+	while (tmp->next)
+	{
+		prev = tmp;
+		tmp = tmp->next;
+	}
+	prev->next = NULL;
+	tmp->next = *head;
+	*head = tmp;
+	tmp = *head;
+	while (tmp)
+	{
+		tmp->index = i;
+		tmp = tmp->next;
+		i++;
+	}
+}
 
 
 int	main(int argc, char **argv)
 {
 	t_struct *node1 = NULL;
 	fill_list(argc, argv, &node1);
+	print_list(&node1);
+	r_rotate(&node1);
 	print_list(&node1);
 }
