@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/02/25 20:18:40 by marvin           ###   ########.fr       */
+/*   Updated: 2025/03/07 00:32:32 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,52 @@ void	swap(t_struct **head)
 		tmp = tmp->next;
 		i ++;
 	}
+}
+
+
+int	node_on_top(t_struct **s)
+{
+	t_struct								*tmp;
+	int										size;
+
+	tmp = *s;
+	while (tmp)
+		tmp = tmp->next;		
+	size = tmp->index;
+	tmp = *s;
+	if (tmp->index < size / 2)
+		return (tmp->index);
+	else
+		return (size - tmp->index);
+}
+
+t_struct	*find_target(int	n, t_struct **s2)
+{
+	t_struct								*tmp;
+	int										index_target;
+	
+	tmp = s2;
+	while (tmp)
+	{
+		index_target = tmp->index;
+		if (tmp->data < n)
+			index_target = tmp->index;
+		tmp = tmp->next;
+	}
+	
+	
+	return (tmp);
+}
+
+int	get_nc(t_struct	**s1, t_struct **s2)
+{
+	int										res;
+	t_struct								*target;
+
+	
+	target = find_target((*s1)->data, s2);
+	res = node_one_top(s1);
+	
 }
 
 void	print_list(t_struct **head)
