@@ -6,11 +6,11 @@
 /*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/03/07 00:32:32 by adichou          ###   ########.fr       */
+/*   Updated: 2025/03/07 03:18:30 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/PUSH_swap.h"
+#include "../include/push_swap.h"
 
 void	create_last_node(int data, int index, t_struct **head)
 {
@@ -62,78 +62,21 @@ void	fill_list(int argc, char **argv, t_struct **head)
 	}
 }
 
-void	rotate(t_struct **head)
+int	count_nodes(t_struct **head)
 {
-	t_struct								*first;
-	t_struct								*tmp;
 	int										i;
+	t_struct								*tmp;
 
-	if (*head == NULL || (*head)->next == NULL)
-		return;
-	first = *head;
+	if (!head || !(*head))
+		return (0);
 	i = 0;
-	*head = first->next;
-	first->next = NULL;
-	tmp = *head;
-	while (tmp->next)
-		tmp = tmp->next;
-	tmp->next = first;
 	tmp = *head;
 	while (tmp)
 	{
-		tmp->index = i;
 		tmp = tmp->next;
-		i ++;
+		i++;
 	}
-}
-
-void	r_rotate(t_struct **head)
-{
-	t_struct								*tmp;
-	t_struct								*tmp2;
-	int										i;
-
-	if (head == NULL || *head == NULL || (*head)->next == NULL)
-		return;
-	tmp = *head;
-	i = 0;
-	while (tmp->next->next)
-		tmp = tmp->next;
-	tmp2 = tmp->next;
-	tmp->next = NULL;
-	tmp2->next = *head;
-	*head = tmp2;
-	tmp = *head;
-	while (tmp)
-	{
-		tmp->index = i;
-		tmp = tmp->next;
-		i ++;
-	}
-}
-
-void	swap(t_struct **head)
-{
-	t_struct								*tmp;
-	t_struct								*tmp2;
-	int										i;
-
-	tmp = *head;
-	i = 0;
-	while (tmp->next->next->next)
-		tmp = tmp->next;
-	tmp2 = tmp->next;
-	tmp->next = tmp2->next;
-	tmp = tmp->next;
-	tmp->next = tmp2;
-	tmp2->next = NULL;
-	tmp = *head;
-	while (tmp)
-	{
-		tmp->index = i;
-		tmp = tmp->next;
-		i ++;
-	}
+	return (i);
 }
 
 
@@ -157,31 +100,33 @@ t_struct	*find_target(int	n, t_struct **s2)
 {
 	t_struct								*tmp;
 	int										index_target;
-	
-	tmp = s2;
+	int										value_target;
+
+	tmp = *s2;
+	value_target = 0;
+	index_target = 0;
 	while (tmp)
 	{
-		index_target = tmp->index;
-		if (tmp->data < n)
+		if (tmp->data < n && tmp->data > value_target)
+		{
 			index_target = tmp->index;
+			value_target = tmp->data;
+		}
 		tmp = tmp->next;
 	}
-	
-	
+	tmp = *s2;
+	while (tmp->index != index_target)
+		tmp = tmp->next;
 	return (tmp);
 }
 
 int	get_nc(t_struct	**s1, t_struct **s2)
 {
-	int										res;
-	t_struct								*target;
+	t_struct								*tmp;
 
-	
-	target = find_target((*s1)->data, s2);
-	res = node_one_top(s1);
-	
+	tmp = find_target((*s1)->data, s2);
+	return (node_on_top(s1) + node_on_top(&tmp) + 1);
 }
-
 void	print_list(t_struct **head)
 {
 	t_struct	*tmp;
@@ -196,6 +141,22 @@ void	print_list(t_struct **head)
 	printf("\n/////////////////////FIN/////////////////////\n\n");
 }
 
+void	sort_list(t_struct **head)
+{
+	t_struct								*s2;
+	t_struct								*tmp;
+	
+	tmp = *head;
+	create_first_node(tmp->data, 0, &s2);
+	if (tmp->next)
+		create_last_node(tmp->next->data, 1, &s2);
+	while (count_nodes(head) >= 3)
+	{
+		
+	}
+	
+}
+
 void	FT_PUSHSWAP(int argc, char **argv)
 {
 	t_struct *head = NULL;
@@ -204,6 +165,8 @@ void	FT_PUSHSWAP(int argc, char **argv)
 	// rotate(&head);
 	// r_rotate(&head);
 	swap(&head);
+	print_list(&head);
+	sort_list(&head);
 	print_list(&head);
 }
 

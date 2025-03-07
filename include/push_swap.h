@@ -20,5 +20,6 @@ void	r_rotate(t_struct **head);
 void	swap(t_struct **head);
 void	print_list(t_struct **head);
 void	FT_PUSHSWAP(int argc, char **argv);
+void	push(t_struct **from, t_struct **to);
 
 #endif
