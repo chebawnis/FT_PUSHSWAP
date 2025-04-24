@@ -3,100 +3,66 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/17 21:43:52 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/24 20:58:53 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/push_swap.h"
+#include "push_swap.h"
 
-void	ft_putstr(char *str)
+int 	get_pos(t_struct *head, int data)
 {
 	int i;
+	
+	i = 0;
+	while (head->next && head->data != data)
+	{
+		i ++;
+		head = head->next;
+	}
+	return (i);
+}
+
+void	ft_putstr(char *s)
+{
+	int	i;
 
 	i = 0;
-	while (str[i] != '\0')
+	while (s[i] != '\0')
 	{
-		// write(1, &str[i], 1);
+		write(1, &s[i], 1);
 		i ++;
 	}
 }
 
-// AFFICHE LA LISTE POUR TEST
-void	print_list(t_struct **head)
+int		ft_atoi(const char *nptr)
 {
-	t_struct	*tmp;
+	int	i;
+	int	sgn;
+	int	res;
 
-	tmp = *head;
-	printf("\n////////////////////DEBUT////////////////////\n\n");
-	while (tmp)
+	i = 0;
+	sgn = 1;
+	res = 0;
+	while ((nptr[i] == ' ') || (nptr[i] >= 9 && nptr[i] <= 13))
+		i ++;
+	if (nptr[i] == '-' || nptr[i] == '+')
 	{
-		printf("valeur %d = %d\n", tmp->index + 1, tmp->data);
-		tmp = tmp->next;
+		if (nptr[i] == '-')
+			sgn = -1;
+		i++;
 	}
-	printf("\n/////////////////////FIN/////////////////////\n\n");
+	while (nptr[i] != '\0' && nptr[i] >= 48 && nptr[i] <= 57)
+	{
+		res = res * 10 + (nptr[i] - 48);
+		i ++;
+	}
+	return (res * sgn);
 }
 
-void	print_lists(t_struct **s1, t_struct **s2)
-{
-	printf("---------S1---------\n");
-	print_list(s1);
-	printf("---------S1---------\n");
-	printf("---------S2---------\n");
-	print_list(s2);
-	printf("---------S2---------\n");
-}
-
-// TRIE HEAD QUAND LA STRUCTURE NE CONTIENT QUE 3 NOEUDS
-void	sort_3(t_struct **head)
-{
-	int	a;
-	int	b;
-	int	c;
-
-	if (!head || !*head || !((*head)->next) || !((*head)->next->next))
-		return;
-	a = (*head)->data;
-	b = (*head)->next->data;
-	c = (*head)->next->next->data;
-	
-	if (a < b && b < c)
-		return;
-	else if (a > b && a < c)
-	{
-		swap(head);
-		ft_putstr("sa\n");
-	}
-	else if (a > b && b > c)
-	{
-		swap(head);
-		ft_putstr("sa\n");
-		r_rotate(head);
-		ft_putstr("rra\n");
-	}
-	else if (a > b && a > c)
-	{
-		rotate(head);
-		ft_putstr("ra\n");
-	}
-	else if (a < b && b > c && a < c)
-	{
-		swap(head);
-		ft_putstr("sa\n");
-		rotate(head);
-		ft_putstr("ra\n");
-	}
-	else if (a < b && a > c)
-	{
-		r_rotate(head);
-		ft_putstr("rra\n");
-	}
-}
-
-// CREE UN NOUVEAU NOEUD A LA FIN DE LA LISTE
-void	create_last_node(int data, int index, t_struct **head)
+void	create_last_node(int data, t_struct **head)
 {
 	t_struct *new_node;
 	t_struct *tmp;
@@ -105,7 +71,6 @@ void	create_last_node(int data, int index, t_struct **head)
 	if (!new_node)
 		return ;
 	new_node->data = data;
-	new_node->index = index;
 	new_node->next = NULL;
 	if (!*head)
 	{
@@ -116,11 +81,9 @@ void	create_last_node(int data, int index, t_struct **head)
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new_node;
-	// printf("NOEUD CREE\n");
 }
 
-// INITIALISE LE PREMIER NOEUD
-void	create_first_node(int data, int index, t_struct **head)
+void	create_first_node(int data, t_struct **head)
 {
 	t_struct *tmp;
 
@@ -128,12 +91,11 @@ void	create_first_node(int data, int index, t_struct **head)
 	if (!tmp)
 		return;
 	tmp->data = data;
-	tmp->index = index;
 	tmp->next = *head;
 	*head = tmp;
 }
 
-// REMPLIS LA LISTE AVEC LES ARGUMENTS DONNES
+// remplis la liste avec les elements donnes
 void	fill_list(int argc, char **argv, t_struct **head)
 {
 	int	i;
@@ -143,252 +105,214 @@ void	fill_list(int argc, char **argv, t_struct **head)
 		return;
 	while (i < argc - 1)
 	{
-		create_last_node(atoi(argv[i + 1]), i, head);
+		create_last_node(ft_atoi(argv[i + 1]), head);
 		i ++;
 	}
 }
 
-// RETOURNE LE NOMBRE DE NOEUDS CONTENUS DANS UNE LISTE
-int	count_nodes(t_struct **head)
+// retourne le nombre de noeuds d'une strucure
+int		count_nodes(t_struct *head)
 {
 	int										i;
-	t_struct								*tmp;
 
-	if (!head || !(*head))
-		return (0);
 	i = 0;
-	tmp = *head;
-	while (tmp)
+	while (head)
 	{
-		tmp = tmp->next;
+		head = head->next;
 		i++;
 	}
 	return (i);
 }
 
-// RETOURNE LE NOMBRE DE COUPS NECESSAIRE POUR MONTER LE NOEUD S AU DEBUT DE LA LISTE
-int	node_on_top(t_struct **s)
+// affiche une liste pour test
+void	print_list(t_struct *head)
 {
-	t_struct								*tmp;
-	int										size;
-
-	tmp = *s;
-	size = count_nodes(s);
-	if (tmp->index < size / 2)
-		return (tmp->index);
-	else
-		return (size - tmp->index);
-}
-
-// RETOURNE LE NOEUD APPARTENANT A S2 CONTENANT LA VALEUR LA PLUS PROCHE INFERIEURE A N
-t_struct	*find_target(int	n, t_struct **s2)
-{
-	t_struct								*tmp;
-	int										index_target;
-	int										value_target;
-
-	tmp = *s2;
-	value_target = -2147483648;
-	index_target = 0;
-	while (tmp)
+	printf("\n////////////////////DEBUT////////////////////\n\n");
+	while (head)
 	{
-		if (tmp->data < n && tmp->data > value_target)
-		{
-			index_target = tmp->index;
-			value_target = tmp->data;
-		}
-		tmp = tmp->next;
+		printf("valeur %d = %d\n", head->data, get_pos(head, 5));
+		head = head->next;
 	}
-	tmp = *s2;
-	while (tmp->index != index_target)
-		tmp = tmp->next;
-	return (tmp);
+	printf("\n/////////////////////FIN/////////////////////\n\n");
 }
 
-// COPIE COLLE DE FIND TARGET MAIS RENVOIE L'INDEX ET NON LE NOEUD
-int		find_target_index(int	n, t_struct **s2)
+// trie une liste de 2 ou 3 elements seulement
+void	sort_3(t_struct **head)
 {
-	t_struct								*tmp;
-	int										index_target;
-	int										value_target;
-
-	tmp = *s2;
-	value_target = -2147483648;
-	index_target = 0;
-	while (tmp)
+	if (count_nodes(*head) == 2 && (*head)->data > (*head)->next->data)
+		s(head, 0);
+	else if (count_nodes(*head) == 3)
 	{
-		if (tmp->data < n && tmp->data > value_target)
+		if ((*head)->data > (*head)->next->data && (*head)->data < (*head)->next->next->data)
+			s(head, 0);
+		else if ((*head)->data > (*head)->next->data && (*head)->next->data > (*head)->next->next->data)
 		{
-			index_target = tmp->index;
-			value_target = tmp->data;
+			s(head, 0);
+			rr(head, 0);
 		}
-		tmp = tmp->next;
+		else if ((*head)->data > (*head)->next->data && (*head)->data > (*head)->next->next->data)
+			r(head, 0);
+		else if ((*head)->data < (*head)->next->data && (*head)->next->data > (*head)->next->next->data && (*head)->data < (*head)->next->next->data)
+		{
+			s(head, 0);
+			r(head, 0);
+		}
+		else if ((*head)->data < (*head)->next->data && (*head)->data > (*head)->next->next->data)
+			rr(head, 0);
 	}
-	tmp = *s2;
-	while (tmp->index != index_target)
-		tmp = tmp->next;
-	return (tmp->index);
 }
 
-// RETOURNE LE NOMBRE TOTAL DE COUPS NECESSAIRE POUR PUSH LE BON NOEUD DE S1 DANS S2
-int	get_nc(t_struct	**s1, t_struct **s2)
+// retourne 0 si la liste n'est pas triee, 1 si elle l'est deja
+int		is_sorted(t_struct *head)
 {
-	t_struct								*tmp;
-
-	tmp = find_target((*s1)->data, s2);
-	return (node_on_top(s1) + node_on_top(&tmp) + 1);
-}
-
-// RETOURNE L'INDEX DU NOEUD LE MOIS COUTEUX A PUSH DANS S
-int		get_node_index(t_struct **s1, t_struct **s2)
-{
-	t_struct								*tmp;
-	int										nc;
-	int										res;
-
-	tmp = *s1;
-	nc = get_nc(&tmp, s2);
-	res = 0;
-	while (tmp)
+	while (head && head->next)
 	{
-		if (get_nc(&tmp, s2) < nc)
-		{
-			nc = get_nc(&tmp, s2);
-			res = tmp->index;
-		}
-		tmp = tmp->next;
+		if (head->data > head->next->data)
+			return (0);
+		head = head->next;
+	}
+	return (1);	
+}
+
+// retourne le data min contenu dans la structure
+int		get_min(t_struct *head)
+{
+	int 		min;
+
+	min = head->data;	
+	while (head)
+	{
+		if (head->data < min)
+			min = head->data;
+		head = head->next;
+	}
+	return (min);		
+}
+
+// retourne le data max contenu dans la structure
+int		get_max(t_struct *head)
+{
+	int 		max;
+
+	max = head->data;	
+	while (head)
+	{
+		if (head->data > max)
+			max = head->data;
+		head = head->next;
+	}
+	return (max);		
+}
+
+// retourne 1 si data est le min de head, 2 si data est le max de head, 0 sinon 
+int		is_new_max_or_min(int data, t_struct *head)
+{
+	if (data < get_min(head))
+		return (1);
+	if (data > get_max(head))
+		return (2);
+	return (0);
+}
+
+// renvoie la plus grande valeur inferieure a data contenue dans head
+int		get_higher_min(int	data, t_struct *s2)
+{
+	int	res;
+
+	res = get_min(s2);
+	while (s2)
+	{
+		if (s2->data < data && s2->data > res)
+			res = s2->data;
+		
+		s2 = s2->next;
 	}
 	return (res);
 }
 
-// MET LE NOEUD DONT L'INDEX EST EGAL A "best_index" AU DEBUT DE LA LISTE
-// REVOIR LES RRA OU RRB PRCKE JE L'APELLE DANS LES DEUX LISTES
-void	get_in_top(t_struct **head, int best_index)
+int		get_number_shot(int size_s1, int size_s2, int	hunter, int target)
 {
-	int										i;
-	int										total;
+	
+}
 
-	i = best_index;
-	total = count_nodes(head);
-	if (best_index > total / 2)
+int		*find_hunter_and_target(t_struct *s1, t_struct *s2, int *targets)
+{
+	int		target;
+	int		shot_tmp;
+	int		i;
+
+	i = 0;
+	while (s1)
 	{
-		while (i < total)
+		if (is_new_max_or_min(s1->data, s2) != 0)
+			target = get_max(s2);
+		else
+			target = get_higher_min(s1->data, s2);
+		shot_tmp = get_number_shot(count_nodes(s1), count_nodes(s2), i, get_pos(s2, target));
+		if (shot_tmp < targets[2] || !targets[2])
 		{
-			r_rotate(head);
-			ft_putstr("rra\n");
-			i ++;
+			targets[0] = s1->data;
+			targets[1] = target;
+			targets[2] = shot_tmp;
 		}
-	}
-	else
-	{
-		while (i > 0)
-		{
-			rotate(head);
-			ft_putstr("ra\n");
-			i --;
-		}
+		s1 = s1->next;
+		i ++;
 	}
 }
 
-// METS LES BON NOEUDS DE S1 ET S2 EN HAUT, PUIS PUSH LE PREMIER NOEUD DE S1 DANS S2
-void	firstpart(t_struct **s1, t_struct **s2, int best_index)
+void	reverse_sort_to_b(t_struct **s1, t_struct **s2)
 {
-	get_in_top(s1, best_index);
-	get_in_top(s2, find_target_index((*s1)->data, s2));
-	push(s1, s2);
-	ft_putstr("pb\n");
-	print_lists(s1, s2);
-}
+	int 		targets[3];
 
-int		get_closest_bigger(int top_value_s1, t_struct **s2)
-{
-	t_struct								*tmp;
-	int										value_tmp;
-	int										index_tmp;
-
-	tmp = *s2;
-	value_tmp = top_value_s1;
-	value_tmp2 = -2147483648;
-	while (tmp)
+	find_hunter_and_target(*s1, *s2, targets);
+	if ((*s1)->data > get_max(*s2))
 	{
-		if (tmp->data < value_tmp )
-		{
-			index_tmp = tmp->index;
-		}
-		
-	}
-	return (index_tmp);
-}
-
-void	sort_list_bis(t_struct **s1, t_struct **s2)
-{
-	t_struct								*tmp;
-	int										value_tmp;
-	int										index_tmp;
-
-	tmp = *s2;
-	value_tmp = -2147483648;
-	while (tmp)
-	{
-		if (tmp->data > value_tmp)
-		{
-			value_tmp = tmp->data;
-			index_tmp = tmp->index;
-		}
-		tmp = tmp->next;
-	}
-	get_in_top(s2, index_tmp);
-	//METTRE LE PLUS PETIT LE PLUS PROCHE DU TOP DE S1 QUI EXISTE DANS S1 AU TOP DE S2
-	tmp = *s1;
-	while (count_nodes(s2) != 0)
-	{
-		get_in_top(s2, get_closest_bigger(tmp->data, s2));
+		push_to_s2(s1, s2, targets);
 	}
 	
 
-	while (count_nodes(s2) != 0)
-	{
-		push(s2, s1);
-		ft_putstr("pa\n");	
-	}
+	push_to_s2(s1, s2, targets)
 }
 
-// LIE TOUTES LES FONCTIONS POUR TRIER LA LISTE
 void	sort_list(t_struct **head)
 {
 	t_struct								*s2;
 	t_struct								*tmp;
+	int										i;
 
-	if (!head || !*head)
-		return;
+	i = 0;
 	tmp = *head;
-	s2 = NULL;
-	create_first_node(tmp->data, 0, &s2);
-	*head = tmp->next;
-	if (tmp->next)
+	if (!is_sorted(*head))
 	{
-		push(head, &s2);
-		ft_putstr("pb\n");
+		if (count_nodes(*head) < 4)
+			sort_3(head);
+		else
+		{
+			p(head, &s2, 1);
+			p(head, &s2, 1);
+			while (count_nodes(*head) > 3)
+			{
+				reverse_sort_to_b(head, &s2);
+			}
+			sort_3(head);
+			while (i < count_nodes(*head))
+				p(&s2, head, 0);
+		}	
 	}
-	print_list(&s2);
-	while (count_nodes(head) > 3)
-		firstpart(head, &s2, get_node_index(head, &s2));
-	sort_3(head);
-	sort_list_bis(head, &s2);
 }
-
 
 void	FT_PUSHSWAP(int argc, char **argv)
 {
 	t_struct *head = NULL;
 	fill_list(argc, argv, &head);
-	print_list(&head);
-	sort_list(&head);
-	print_list(&head);
+	print_list(head);
+	sort_3(&head);
+	print_list(head);
 }
+
 
 int	main(int argc, char **argv)
 {
-	setbuf(stdout, NULL);
 	FT_PUSHSWAP(argc, argv);
+	
 }

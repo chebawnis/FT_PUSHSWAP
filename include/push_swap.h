@@ -9,18 +9,22 @@
 typedef struct s_struct
 {
 	int					data;
-	int					index;
 	struct s_struct		*next;
 } t_struct;
 
-void	create_last_node(int data, int index, t_struct **head);
-void	create_first_node(int data, int index, t_struct **head);
+/////////////////INSTRUCTIONS///////////////////////
+void	r(t_struct **head, int i);
+void	rr(t_struct **head, int i);
+void	s(t_struct **head, int i);
+void	p(t_struct **from, t_struct **to, int i);
+
+/////////////////PARSING///////////////////////
+void	create_last_node(int data, t_struct **head);
+void	create_first_node(int data, t_struct **head);
 void	fill_list(int argc, char **argv, t_struct **head);
-void	rotate(t_struct **head);
-void	r_rotate(t_struct **head);
-void	swap(t_struct **head);
-void	print_list(t_struct **head);
 void	FT_PUSHSWAP(int argc, char **argv);
-void	push(t_struct **from, t_struct **to);
+
+///////////////////UTILS/////////////////////////////
+void	print_list(t_struct *head);
 
 #endif
