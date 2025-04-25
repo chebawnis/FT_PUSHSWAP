@@ -6,7 +6,7 @@
 /*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/24 20:58:53 by adichou          ###   ########.fr       */
+/*   Updated: 2025/04/26 01:39:31 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,14 +179,14 @@ int		get_min(t_struct *head)
 {
 	int 		min;
 
-	min = head->data;	
+	min = head->data;
 	while (head)
 	{
 		if (head->data < min)
 			min = head->data;
 		head = head->next;
 	}
-	return (min);		
+	return (min);
 }
 
 // retourne le data max contenu dans la structure
@@ -230,15 +230,81 @@ int		get_higher_min(int	data, t_struct *s2)
 	return (res);
 }
 
-int		get_number_shot(int size_s1, int size_s2, int	hunter, int target)
+int		is_under(int len, int indice)
 {
-	
+	if (indice <= len / 2)
+		return (1);
+	return (0);	
 }
 
-int		*find_hunter_and_target(t_struct *s1, t_struct *s2, int *targets)
+int		is_over(int len, int indice)
+{
+	if (indice <= len / 2)
+		return (0);
+	return (1);	
+}
+
+int		cmp_int(int index_1, int index_2)
+{
+	if (index_1 > index_2)
+		return (index_1);
+	return (index_2);
+}
+
+int		cmp_min_int(int index_1, int index_2)
+{
+	if (index_1 > index_2)
+		return (index_2);
+	return (index_1);
+}
+
+int		under(int size_s1, int size_s2, int	hunter, int target)
+{
+	if ((is_under(size_s1, hunter) && is_under(size_s2, target)) 
+		|| (is_under(size_s1, hunter) && is_over(size_s2, target)
+		&& cmp_int(hunter, target) <= cmp_int(size_s1 - hunter, size_s2 - target)
+		&& cmp_int(hunter, target) <= size_s2 - target + target)
+		|| (is_under(size_s2, target) && is_over(size_s1, hunter)
+		&& cmp_int(hunter, target) <= cmp_int(size_s1 - hunter, size_s2 - target)
+		&& cmp_int(hunter, target) <= size_s1 - hunter + target))
+		return(cmp_int(hunter, target) + 1);
+	return (0);
+}
+
+int		over(int size_s1, int size_s2, int	hunter, int target)
+{
+	if ((is_under(size_s1, hunter) && is_under(size_s2, target)) 
+		|| (is_under(size_s1, hunter) && is_over(size_s2, target)
+		&& cmp_int(hunter, target) > cmp_int(size_s1 - hunter, size_s2 - target)
+		&& cmp_int(hunter, target) > size_s2 - target + hunter)
+		|| (is_under(size_s2, target) && is_over(size_s1, hunter)
+		&& cmp_int(hunter, target) > cmp_int(size_s1 - hunter, size_s2 - target)
+		&& cmp_int(hunter, target) > size_s1 - hunter + target))
+		return(cmp_int(hunter, target) + 1);
+	return (0);
+}
+
+int		*get_number_shot(int size_s1, int size_s2, int	hunter, int target)
+{
+	int		shot[3];
+
+	shot[0] = under(size_s1, size_s2, hunter, target);
+	if (!shot[0])
+		shot[0] = over(size_s1, size_s2, hunter, target);
+	if (!shot[0])
+	{
+		if (is_under(size_s1, hunter))
+			shot[0] = hunter + size_s2 - target + 1;
+		else
+			shot[0] = target + size_s1 - hunter + 1;
+	}
+	return (shot);
+}
+
+int		find_hunter_and_target(t_struct *s1, t_struct *s2, int *targets)
 {
 	int		target;
-	int		shot_tmp;
+	int		shot_tmp[3];
 	int		i;
 
 	i = 0;
@@ -249,6 +315,7 @@ int		*find_hunter_and_target(t_struct *s1, t_struct *s2, int *targets)
 		else
 			target = get_higher_min(s1->data, s2);
 		shot_tmp = get_number_shot(count_nodes(s1), count_nodes(s2), i, get_pos(s2, target));
+		printf("nombre de coup pour le chiffre %d : %d\n", s1->data, shot_tmp);
 		if (shot_tmp < targets[2] || !targets[2])
 		{
 			targets[0] = s1->data;
@@ -260,18 +327,51 @@ int		*find_hunter_and_target(t_struct *s1, t_struct *s2, int *targets)
 	}
 }
 
+void	init_target(int *target)
+{
+	target[0] = 0;
+	target[1] = 0;
+	target[2] = 0;
+}
+
+void	get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int target)
+{
+	int	i;
+
+	i = 0;
+	while (i < cmp_min_int(hunter, target))
+	{
+		if (hunter > target)
+		{
+			r(s1, s2, 2);
+		}
+		else
+			r(s1, 2);
+	}
+	
+}
+
+void	push_to_s2(t_struct **s1, t_struct **s2, int *targets)
+{
+	if (targets[3] == 0 && targets[4] == 0)
+		get_both_in_top(s1, s2, targets[0], targets[1]);
+	else if (targets[3] == 1 && targets[4] == 1)
+		reverse_get_both_in_top(s1, s2, targets[0], targets[1]);
+	else
+	{
+		get_in_top(s1, targets[0]);
+		get_in_top(s2, targets[1]);
+	}
+	p(s1, s2, 1);
+}
+
 void	reverse_sort_to_b(t_struct **s1, t_struct **s2)
 {
 	int 		targets[3];
 
+	init_target(targets);
 	find_hunter_and_target(*s1, *s2, targets);
-	if ((*s1)->data > get_max(*s2))
-	{
-		push_to_s2(s1, s2, targets);
-	}
-	
-
-	push_to_s2(s1, s2, targets)
+	push_to_s2(s1, s2, targets);
 }
 
 void	sort_list(t_struct **head)
@@ -281,6 +381,7 @@ void	sort_list(t_struct **head)
 	int										i;
 
 	i = 0;
+	s2 = NULL;
 	tmp = *head;
 	if (!is_sorted(*head))
 	{
@@ -305,9 +406,9 @@ void	FT_PUSHSWAP(int argc, char **argv)
 {
 	t_struct *head = NULL;
 	fill_list(argc, argv, &head);
-	print_list(head);
-	sort_3(&head);
-	print_list(head);
+	//print_list(head);
+	sort_list(&head);
+	//print_list(head);
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 16:21:24 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/22 17:20:19 by adichou          ###   ########.fr       */
+/*   Updated: 2025/04/26 01:39:59 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	rotate(t_struct **head)
 	tmp->next = first;
 }
 
-void	r(t_struct **head, int i)
+void	r(t_struct **s1, t_struct **s2, int i)
 {
 	if (i == 0)
 		write(1, "ra\n", 3);

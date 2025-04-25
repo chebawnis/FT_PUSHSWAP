@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I include
+CFLAGS = -Wall -Wextra -Werror -I include -g
 NAME = push_swap
 SRC = src/main.c \
 		src/movements/push.c \
