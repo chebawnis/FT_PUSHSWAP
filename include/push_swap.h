@@ -23,7 +23,7 @@ void	p(t_struct **from, t_struct **to, int i);
 /////////////////PARSING///////////////////////
 void	create_last_node(int data, t_struct **head);
 void	create_first_node(int data, t_struct **head);
-void	fill_list(int argc, char **argv, t_struct **head);
+int		fill_list(int argc, char **argv, t_struct **head);
 void	FT_PUSHSWAP(int argc, char **argv);
 
 ///////////////////UTILS/////////////////////////////

@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/26 23:21:52 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/27 00:35:33 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,19 +95,43 @@ void	create_first_node(int data, t_struct **head)
 	*head = tmp;
 }
 
+int	verif_struct(t_struct *head)
+{
+	t_struct	*tmp1;
+	t_struct	*tmp2;
+
+	tmp1 = head;
+	tmp2 = head;
+	while (tmp1)
+	{
+		while (tmp2)
+		{
+			if (tmp1->data = tmp2->data)
+				return (1);
+			tmp2 = tmp2->next;
+		}
+		tmp2 = head;
+		tmp1 = tmp1->next;
+	}
+	return (0);	
+}
+
 // remplis la liste avec les elements donnes
-void	fill_list(int argc, char **argv, t_struct **head)
+int	fill_list(int argc, char **argv, t_struct **head)
 {
 	int	i;
 
 	i = 0;
 	if (argc < 2)
-		return;
+		return (0);
 	while (i < argc - 1)
 	{
 		create_last_node(ft_atoi(argv[i + 1]), head);
 		i ++;
 	}
+	if (verif_struct(*head))
+		return (0);
+	return (1);
 }
 
 // retourne le nombre de noeuds d'une strucure
@@ -359,63 +383,7 @@ void	init_target(int *target)
 	target[2] = 0;
 }
 
-void	get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int target)
-{
-	int	i;
-
-	i = cmp_min_int(hunter, target);
-	while (i)
-	{
-		rr(s1, s2);
-		i --;
-	}	if (hunter > target)
-	{
-		while (i < hunter - target)
-		{
-			r(s1, 0);
-			i ++;
-		}
-	}
-	else if (target > hunter)
-	{
-		while (i < target - hunter)
-		{
-			r(s2, 1);
-			i ++;
-		}
-	}
-}
-
-void	reverse_get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int target)
-{
-	int	nb_shots_hunter;
-	int	nb_shots_target;
-	int	i;
-
-	nb_shots_hunter = count_nodes(*s1) - get_pos(*s1, hunter);
-	nb_shots_target = count_nodes(*s2) - get_pos(*s2, target);
-	i = cmp_min_int(nb_shots_hunter, nb_shots_target);
-	while (i)
-	{
-		r_rr(s1, s2);
-		i --;
-	}
-	while (i < cmp_int(nb_shots_hunter, nb_shots_target)
-			- cmp_min_int(nb_shots_hunter, nb_shots_target))
-	{
-		if (nb_shots_hunter > nb_shots_target)
-			r_r(s1, 0);
-		else if (nb_shots_hunter < nb_shots_target)
-			r_r(s2, 1);
-		i ++;
-	}
-}
-
-// targets[0] = hunter;				
-// targets[1] = target;
-// targets[2] = nombre de coups;
-
-void	get_in_top(t_struct **head, int value, int i)
+void	a(t_struct **head, int value, int i)
 {
 	if (is_under(count_nodes(*head), get_pos(*head, value)))
 	{
@@ -434,19 +402,28 @@ void	push_to_s2(t_struct **s1, t_struct **s2, int targets[3])
 	if (under(count_nodes(*s1), count_nodes(*s2),
 		get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
 	{
-		get_both_in_top(s1, s2, get_pos(*s1, targets[0]),
-		get_pos(*s2, targets[1]));
+		while (get_pos(*s1, targets[0]) && get_pos(*s2, targets[1]))
+			rr(s1, s2);
 	}
 	else if	(over(count_nodes(*s1), count_nodes(*s2),
 	get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
 	{
-		reverse_get_both_in_top(s1, s2, get_pos(*s1, targets[0]),
-		get_pos(*s2, targets[1]));
+		while (get_pos(*s1, targets[0]) && get_pos(*s2, targets[1]))
+			r_rr(s1, s2);
 	}
-	else
+	while(get_pos(*s1, targets[0]))
 	{
-		get_in_top(s1, targets[0], 0);
-		get_in_top(s2, targets[1], 1);
+		if (get_pos(*s1, targets[0]) <= count_nodes(*s1) / 2)
+			r(s1, 0);
+		else
+			r_r(s1, 0);
+	}
+	while(get_pos(*s2, targets[1]))
+	{
+		if (get_pos(*s2, targets[1]) <= count_nodes(*s2) / 2)
+			r(s2, 1);
+		else
+			r_r(s2, 1);
 	}
 	p(s1, s2, 1);
 }
@@ -501,17 +478,13 @@ void	FT_PUSHSWAP(int argc, char **argv)
 {
 	t_struct *head = NULL;
 	t_struct *s2 = NULL;
-	fill_list(argc, argv, &head);
-	// print_list(head);
-	// print_list(s2);
-	sort_list(&head, &s2);
-	// print_list(head);
-	// print_list(s2);
+	if (fill_list(argc, argv, &head))
+		sort_list(&head, &s2);
+	// free_list(head);
 }
 
 
 int	main(int argc, char **argv)
 {
 	FT_PUSHSWAP(argc, argv);
-	
 }
