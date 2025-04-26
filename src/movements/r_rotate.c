@@ -29,7 +29,7 @@ void	r_r(t_struct **head, int i)
 
 void	r_rr(t_struct **s1, t_struct **s2)
 {
-	rotate(s1);
-	rotate(s2);
+	r_rotate(s1);
+	r_rotate(s2);
 	write(1, "rrr\n", 4);
 }
