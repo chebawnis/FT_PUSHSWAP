@@ -14,7 +14,9 @@ typedef struct s_struct
 
 /////////////////INSTRUCTIONS///////////////////////
 void	r(t_struct **head, int i);
-void	rr(t_struct **head, int i);
+void	rr(t_struct **s1, t_struct **s2);
+void	r_r(t_struct **head, int i);
+void	r_rr(t_struct **s1, t_struct **s2);
 void	s(t_struct **head, int i);
 void	p(t_struct **from, t_struct **to, int i);
 

@@ -6,7 +6,7 @@
 /*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/26 01:39:31 by adichou          ###   ########.fr       */
+/*   Updated: 2025/04/26 02:59:10 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,14 +232,14 @@ int		get_higher_min(int	data, t_struct *s2)
 
 int		is_under(int len, int indice)
 {
-	if (indice <= len / 2)
+	if (indice <= len / 2 + 1)
 		return (1);
 	return (0);	
 }
 
 int		is_over(int len, int indice)
 {
-	if (indice <= len / 2)
+	if (indice <= len / 2 + 1)
 		return (0);
 	return (1);	
 }
@@ -338,17 +338,65 @@ void	get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int target)
 {
 	int	i;
 
-	i = 0;
-	while (i < cmp_min_int(hunter, target))
+	i = cmp_min_int(hunter, target);
+	while (i)
 	{
-		if (hunter > target)
-		{
-			r(s1, s2, 2);
-		}
-		else
-			r(s1, 2);
+		rr(s1, s2);
+		i --;
 	}
-	
+	if (hunter > target)
+	{
+		while (i < hunter - target)
+		{
+			r(s1, 0);
+			i ++;
+		}
+	}
+	else if (target > hunter)
+	{
+		while (i < target - hunter)
+		{
+			r(s2, 1);
+			i ++;
+		}
+	}
+}
+
+void	reverse_get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int target)
+{
+	int	nb_shots_hunter;
+	int	nb_shots_target;
+	int	i;
+
+	nb_shots_hunter = count_nodes(*s1) - get_pos(*s1, hunter);
+	nb_shots_target = count_nodes(*s2) - get_pos(*s2, target);
+	i = cmp_min_int(nb_shots_hunter, nb_shots_target) + 1;
+	while (i)
+	{
+		r_rr(s1, s2);
+		i --;
+	}
+	while (i < cmp_int(nb_shots_hunter, nb_shots_target)
+			- cmp_min_int(nb_shots_hunter, nb_shots_target))
+	{
+		if (nb_shots_hunter > nb_shots_target)
+			rr(s1, 0);
+		else if (nb_shots_hunter < nb_shots_target)
+			rr(s2, 1);
+		i ++;
+	}
+}
+
+void	get_in_top(t_struct **head, int index)
+{
+	if (index <= count_nodes(*head) / 2 + 1)
+	{
+		// aller vers le haut
+	}
+	else
+	{
+		// aller vers le bas
+	}	
 }
 
 void	push_to_s2(t_struct **s1, t_struct **s2, int *targets)

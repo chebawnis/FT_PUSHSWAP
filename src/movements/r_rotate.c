@@ -18,13 +18,18 @@ void	r_rotate(t_struct **head)
 	*head = tmp2;
 }
 
-void	rr(t_struct **head, int i)
+void	r_r(t_struct **head, int i)
 {
 	if (i == 0)
 		write(1, "rra\n", 4);
 	else if (i == 1)
 		write(1, "rrb\n", 4);
-	else
-		write(1, "rrr\n", 4);
 	r_rotate(head);
+}
+
+void	r_rr(t_struct **s1, t_struct **s2)
+{
+	rotate(s1);
+	rotate(s2);
+	write(1, "rrr\n", 4);
 }
