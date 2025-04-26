@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/26 18:59:51 by adichou          ###   ########.fr       */
+/*   Updated: 2025/04/26 23:21:52 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,37 +130,47 @@ void	print_list(t_struct *head)
 	printf("\n////////////////////DEBUT////////////////////\n\n");
 	while (head)
 	{
-		printf("valeur %d = %d\n", head->data, get_pos(head, 5));
+		printf("valeur position %d = %d\n", get_pos(head, head->data), head->data);
 		head = head->next;
 	}
 	printf("\n/////////////////////FIN/////////////////////\n\n");
 }
 
 // trie une liste de 2 ou 3 elements seulement
-void	sort_3(t_struct **head)
+void	ft_sort_three(t_struct **stack)
 {
-	if (count_nodes(*head) == 2 && (*head)->data > (*head)->next->data)
-		s(head, 0);
-	else if (count_nodes(*head) == 3)
+	if ((*stack)->data < (*stack)->next->data
+		&& (*stack)->data < (*stack)->next->next->data
+		&& (*stack)->next->data > (*stack)->next->next->data)
 	{
-		if ((*head)->data > (*head)->next->data && (*head)->data < (*head)->next->next->data)
-			s(head, 0);
-		else if ((*head)->data > (*head)->next->data && (*head)->next->data > (*head)->next->next->data)
-		{
-			s(head, 0);
-			rr(head, 0);
-		}
-		else if ((*head)->data > (*head)->next->data && (*head)->data > (*head)->next->next->data)
-			r(head, 0);
-		else if ((*head)->data < (*head)->next->data && (*head)->next->data > (*head)->next->next->data && (*head)->data < (*head)->next->next->data)
-		{
-			s(head, 0);
-			r(head, 0);
-		}
-		else if ((*head)->data < (*head)->next->data && (*head)->data > (*head)->next->next->data)
-			rr(head, 0);
+		s(stack, 0);
+		r(stack, 0);
+	}
+	if ((*stack)->data < (*stack)->next->data
+		&& (*stack)->data > (*stack)->next->next->data)
+		r_r(stack, 0);
+	if ((*stack)->data > (*stack)->next->data
+		&& (*stack)->data < (*stack)->next->next->data)
+		s(stack, 0);
+	if ((*stack)->data > (*stack)->next->data
+		&& (*stack)->next->data < (*stack)->next->next->data)
+		r(stack, 0);
+	if ((*stack)->data > (*stack)->next->data
+		&& (*stack)->next->data > (*stack)->next->next->data)
+	{
+		r(stack, 0);
+		s(stack, 0);
 	}
 }
+
+void	sort_3(t_struct **stack, int len)
+{
+	if (len == 2 && (*stack)->data > (*stack)->next->data)
+		r(stack, 0);
+	if (len == 3)
+		ft_sort_three(stack);
+}
+
 
 // retourne 0 si la liste n'est pas triee, 1 si elle l'est deja
 int		is_sorted(t_struct *head)
@@ -224,7 +234,20 @@ int		get_higher_min(int	data, t_struct *s2)
 	{
 		if (s2->data < data && s2->data > res)
 			res = s2->data;
-		
+		s2 = s2->next;
+	}
+	return (res);
+}
+
+int		get_lower_max(int data, t_struct *s2)
+{
+	int	res;
+
+	res = get_max(s2);
+	while (s2)
+	{
+		if (s2->data > data && s2->data < res)
+			res = s2->data;
 		s2 = s2->next;
 	}
 	return (res);
@@ -275,11 +298,11 @@ int		over(int size_s1, int size_s2, int	hunter, int target)
 {
 	if ((is_over(size_s1, hunter) && is_over(size_s2, target)) 
 		|| (is_under(size_s1, hunter) && is_over(size_s2, target)
-		&& cmp_int(hunter, target) > cmp_int(size_s1 - hunter, size_s2 - target)
-		&& cmp_int(hunter, target) > size_s2 - target + hunter)
+		&& cmp_int(hunter, target) >= cmp_int(size_s1 - hunter, size_s2 - target)
+		&& cmp_int(size_s1 - hunter, size_s2 - target) <= size_s2 - target + hunter)
 		|| (is_under(size_s2, target) && is_over(size_s1, hunter)
-		&& cmp_int(hunter, target) > cmp_int(size_s1 - hunter, size_s2 - target)
-		&& cmp_int(hunter, target) > size_s1 - hunter + target))
+		&& cmp_int(hunter, target) >= cmp_int(size_s1 - hunter, size_s2 - target)
+		&& cmp_int(size_s1 - hunter, size_s2 - target) <= size_s1 - hunter + target))
 		return(cmp_int(size_s1 - hunter, size_s2 - target) + 1);
 	return (0);
 }
@@ -314,8 +337,10 @@ void	find_hunter_and_target(t_struct *s1, t_struct *s2, int *targets)
 			target = get_max(s2);
 		else
 			target = get_higher_min(s1->data, s2);
-		shot_tmp = get_number_shot(count_nodes(s1) + i, count_nodes(s2), i, get_pos(s2, target));
-		printf("nombre de coup pour le chiffre %d : %d\n", s1->data, shot_tmp);
+		if (!i && !get_pos(s2, targets[1]) && !targets[2])
+			shot_tmp = 1;
+		else
+			shot_tmp = get_number_shot(count_nodes(s1) + i, count_nodes(s2), i, get_pos(s2, target));
 		if (shot_tmp < targets[2] || !targets[2])
 		{
 			targets[0] = s1->data;
@@ -343,8 +368,7 @@ void	get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int target)
 	{
 		rr(s1, s2);
 		i --;
-	}
-	if (hunter > target)
+	}	if (hunter > target)
 	{
 		while (i < hunter - target)
 		{
@@ -370,7 +394,7 @@ void	reverse_get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int targe
 
 	nb_shots_hunter = count_nodes(*s1) - get_pos(*s1, hunter);
 	nb_shots_target = count_nodes(*s2) - get_pos(*s2, target);
-	i = cmp_min_int(nb_shots_hunter, nb_shots_target) + 1;
+	i = cmp_min_int(nb_shots_hunter, nb_shots_target);
 	while (i)
 	{
 		r_rr(s1, s2);
@@ -387,69 +411,88 @@ void	reverse_get_both_in_top(t_struct **s1, t_struct **s2, int hunter, int targe
 	}
 }
 
-// void	get_in_top(t_struct **head, int index)
-// {	else
-	// {
-	// 	get_in_top(s1, targets[0]);
-	// 	get_in_top(s2, targets[1]);
-	// }
-// 	if (index <= count_nodes(*head) / 2 + 1)
-// 	{
-// 		// aller vers le haut
-// 	}
-// 	else
-// 	{
-// 		// aller vers le bas
-// 	}	
-// }
+// targets[0] = hunter;				
+// targets[1] = target;
+// targets[2] = nombre de coups;
 
-// void	push_to_s2(t_struct **s1, t_struct **s2, int *targets)
-// {
-// 	if (targets[3] == 0 && targets[4] == 0)
-// 		get_both_in_top(s1, s2, targets[0], targets[1]);
-// 	else if (targets[3] == 1 && targets[4] == 1)
-// 		reverse_get_both_in_top(s1, s2, targets[0], targets[1]);
-// 	else
-// 	{
-// 		get_in_top(s1, targets[0]);
-// 		get_in_top(s2, targets[1]);
-// 	}
-// 	p(s1, s2, 1);
-// }
+void	get_in_top(t_struct **head, int value, int i)
+{
+	if (is_under(count_nodes(*head), get_pos(*head, value)))
+	{
+		while (get_pos(*head, value))
+			r(head, i);
+	}
+	else
+	{
+		while (get_pos(*head, value))
+			r_r(head, i);
+	}
+}
+
+void	push_to_s2(t_struct **s1, t_struct **s2, int targets[3])
+{
+	if (under(count_nodes(*s1), count_nodes(*s2),
+		get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
+	{
+		get_both_in_top(s1, s2, get_pos(*s1, targets[0]),
+		get_pos(*s2, targets[1]));
+	}
+	else if	(over(count_nodes(*s1), count_nodes(*s2),
+	get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
+	{
+		reverse_get_both_in_top(s1, s2, get_pos(*s1, targets[0]),
+		get_pos(*s2, targets[1]));
+	}
+	else
+	{
+		get_in_top(s1, targets[0], 0);
+		get_in_top(s2, targets[1], 1);
+	}
+	p(s1, s2, 1);
+}
 
 void	reverse_sort_to_b(t_struct **s1, t_struct **s2)
 {
 	int 		targets[3];
 
-	init_target(targets);
-	find_hunter_and_target(*s1, *s2, targets);
-	// push_to_s2(s1, s2, targets);
+	init_target(&targets[0]);
+	find_hunter_and_target(*s1, *s2, &targets[0]);
+	push_to_s2(s1, s2, targets);
 }
 
-void	sort_list(t_struct **head)
+void	final_placement(t_struct **s1, t_struct **s2)
 {
-	t_struct								*s2;
-	t_struct								*tmp;
-	int										i;
+	int			target;
+	while (*s2)
+	{
+		if (is_new_max_or_min((*s2)->data, *s1))
+			target = get_min(*s1);
+		else
+			target = get_lower_max((*s2)->data, *s1);
+		get_in_top(s1, target, 0);
+		p(s2, s1, 0);
+	}
+}
 
-	i = 0;
-	s2 = NULL;
-	tmp = *head;
+void	sort_list(t_struct **head, t_struct **s2)
+{
+	//int										i;
+
+	//i = 0;
 	if (!is_sorted(*head))
 	{
 		if (count_nodes(*head) < 4)
-			sort_3(head);
+			sort_3(head, count_nodes(*head));
 		else
 		{
-			p(head, &s2, 1);
-			p(head, &s2, 1);
+			p(head, s2, 1);
+			p(head, s2, 1);
 			while (count_nodes(*head) > 3)
-			{
-				reverse_sort_to_b(head, &s2);
-			}
-			sort_3(head);
-			while (i < count_nodes(*head))
-				p(&s2, head, 0);
+				reverse_sort_to_b(head, s2);
+			sort_3(head, count_nodes(*head));
+			get_in_top(s2, get_max(*s2), 1);
+			final_placement(head, s2);
+			get_in_top(head, get_min(*head), 0);
 		}	
 	}
 }
@@ -457,10 +500,13 @@ void	sort_list(t_struct **head)
 void	FT_PUSHSWAP(int argc, char **argv)
 {
 	t_struct *head = NULL;
+	t_struct *s2 = NULL;
 	fill_list(argc, argv, &head);
-	//print_list(head);
-	sort_list(&head);
-	//print_list(head);
+	// print_list(head);
+	// print_list(s2);
+	sort_list(&head, &s2);
+	// print_list(head);
+	// print_list(s2);
 }
 
 

@@ -4,12 +4,10 @@ void	r_rotate(t_struct **head)
 {
 	t_struct								*tmp;
 	t_struct								*tmp2;
-	int										i;
 
 	if (head == NULL || *head == NULL || (*head)->next == NULL)
 		return;
 	tmp = *head;
-	i = 0;
 	while (tmp->next->next)
 		tmp = tmp->next;
 	tmp2 = tmp->next;
