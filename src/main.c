@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/27 00:35:33 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/27 19:06:35 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,28 +95,71 @@ void	create_first_node(int data, t_struct **head)
 	*head = tmp;
 }
 
-int	verif_struct(t_struct *head)
+int	verif_struct(t_struct **head)
 {
 	t_struct	*tmp1;
 	t_struct	*tmp2;
 
-	tmp1 = head;
-	tmp2 = head;
+	tmp1 = *head;
+	tmp2 = *head;
 	while (tmp1)
 	{
+		tmp2 = tmp1->next;
 		while (tmp2)
 		{
-			if (tmp1->data = tmp2->data)
+			if (tmp1->data == tmp2->data)
 				return (1);
 			tmp2 = tmp2->next;
 		}
-		tmp2 = head;
 		tmp1 = tmp1->next;
 	}
+	tmp1 = *head;
 	return (0);	
 }
 
-// remplis la liste avec les elements donnes
+int	is_num(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i ++;
+	if (!str[i])
+		return (0);
+	while (str[i])
+	{
+		if (str[i] > '9' || str[i] < '0')
+			return (0);
+		i ++;
+	}
+	return (1);
+}
+
+int	is_char_num(char c)
+{
+	if ((c >= '0' && c <= '9') || c == '-' || c == '+')
+		return (1);
+	return (0);	
+}
+
+void	fill_list_str(char *str, t_struct **head)
+{
+	int	i;
+
+	i = 0;
+	while (str[i] == ' ')
+		i ++;
+	while (str[i])
+	{
+		create_last_node(ft_atoi(&str[i]), head);
+		while (is_char_num(str[i]))
+			i ++;
+		while (str[i] == ' ')
+			i ++;
+	}
+}
+
+// remplis la liste avec les elements donnes et verifie les doublons etc
 int	fill_list(int argc, char **argv, t_struct **head)
 {
 	int	i;
@@ -124,12 +167,20 @@ int	fill_list(int argc, char **argv, t_struct **head)
 	i = 0;
 	if (argc < 2)
 		return (0);
+	if (argc == 2)
+	{
+		fill_list_str(argv[1], head);
+		return (1);
+	}
 	while (i < argc - 1)
 	{
-		create_last_node(ft_atoi(argv[i + 1]), head);
+		if (is_num(argv[i + 1]))
+			create_last_node(ft_atoi(argv[i + 1]), head);
+		else
+			return (0);
 		i ++;
 	}
-	if (verif_struct(*head))
+	if (verif_struct(head))
 		return (0);
 	return (1);
 }
@@ -383,6 +434,20 @@ void	init_target(int *target)
 	target[2] = 0;
 }
 
+void	get_in_top(t_struct **head, int value, int i)
+{
+	if (is_under(count_nodes(*head), get_pos(*head, value)))
+	{
+		while (get_pos(*head, value))
+			r(head, i);
+	}
+	else
+	{
+		while (get_pos(*head, value))
+			r_r(head, i);
+	}
+}
+
 void	a(t_struct **head, int value, int i)
 {
 	if (is_under(count_nodes(*head), get_pos(*head, value)))
@@ -480,6 +545,8 @@ void	FT_PUSHSWAP(int argc, char **argv)
 	t_struct *s2 = NULL;
 	if (fill_list(argc, argv, &head))
 		sort_list(&head, &s2);
+	else
+		ft_putstr("Error\n");
 	// free_list(head);
 }
 
