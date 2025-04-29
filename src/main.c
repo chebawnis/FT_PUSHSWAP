@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/27 19:06:35 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/29 03:56:31 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,33 @@ int		ft_atoi(const char *nptr)
 		i ++;
 	}
 	return (res * sgn);
+}
+
+int		verify_number(char *nptr)
+{
+	int		i;
+	int		sgn;
+	long	res;
+
+	i = 0;
+	sgn = 1;
+	res = 0;
+	while ((nptr[i] == ' ') || (nptr[i] >= 9 && nptr[i] <= 13))
+		i ++;
+	if (nptr[i] == '-' || nptr[i] == '+')
+	{
+		if (nptr[i] == '-')
+			sgn = -1;
+		i++;
+	}
+	while (nptr[i] != '\0' && nptr[i] >= 48 && nptr[i] <= 57)
+	{
+		res = res * 10 + (nptr[i] - 48);
+		i ++;
+	}
+	if ((res > 2147483647 && sgn == 1) || (res < -2147483648 && sgn == -1))
+		return (0);
+	return (1);	
 }
 
 void	create_last_node(int data, t_struct **head)
@@ -142,6 +169,20 @@ int	is_char_num(char c)
 	return (0);	
 }
 
+int		isstrnum(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != ' ' || !is_char_num(str[i]))
+			return 0;
+		i ++;
+	}
+	return (1);
+}
+
 void	fill_list_str(char *str, t_struct **head)
 {
 	int	i;
@@ -149,8 +190,15 @@ void	fill_list_str(char *str, t_struct **head)
 	i = 0;
 	while (str[i] == ' ')
 		i ++;
+	if (!isstrnum(str))
+	{
+		write(2, "Error\n", 6);
+		return ;	
+	}
 	while (str[i])
 	{
+		if (!verify_number(&str[i]))
+			return ;		
 		create_last_node(ft_atoi(&str[i]), head);
 		while (is_char_num(str[i]))
 			i ++;
@@ -174,7 +222,7 @@ int	fill_list(int argc, char **argv, t_struct **head)
 	}
 	while (i < argc - 1)
 	{
-		if (is_num(argv[i + 1]))
+		if (is_num(argv[i + 1]) && verify_number(argv[i + 1]))
 			create_last_node(ft_atoi(argv[i + 1]), head);
 		else
 			return (0);
@@ -539,6 +587,8 @@ void	sort_list(t_struct **head, t_struct **s2)
 	}
 }
 
+
+
 void	FT_PUSHSWAP(int argc, char **argv)
 {
 	t_struct *head = NULL;
@@ -546,7 +596,7 @@ void	FT_PUSHSWAP(int argc, char **argv)
 	if (fill_list(argc, argv, &head))
 		sort_list(&head, &s2);
 	else
-		ft_putstr("Error\n");
+		write(2, "Error\n", 6);
 	// free_list(head);
 }
 
