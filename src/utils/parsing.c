@@ -6,7 +6,7 @@
 /*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 21:19:23 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/29 23:04:58 by adichou          ###   ########.fr       */
+/*   Updated: 2025/04/30 00:09:23 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ int	parse_tab(char **tab, t_struct **head, int size_tab)
 	if (verif_struct(head))
 		return (0);
 	return (1);
+	ft_free_tab(tab);
 }
 
 // remplis la liste avec les elements donnes et verifie les doublons etc
@@ -108,7 +109,6 @@ int	fill_list(int argc, char **argv, t_struct **head)
 		tab = ft_split(argv[1], ' ');
 		if (!parse_tab(tab, head, countwords(argv[1], ' ')))
 			return (0);
-		ft_free_tab(tab);
 		return (1);
 	}
 	while (i < argc - 1)
