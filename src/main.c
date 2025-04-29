@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/29 04:10:57 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/29 19:25:40 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-int 	get_pos(t_struct *head, int data)
+int	get_pos(t_struct *head, int data)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	while (head->next && head->data != data)
 	{
@@ -37,7 +37,7 @@ void	ft_putstr(char *s)
 	}
 }
 
-int		ft_atoi(const char *nptr)
+int	ft_atoi(const char *nptr)
 {
 	int	i;
 	int	sgn;
@@ -62,7 +62,7 @@ int		ft_atoi(const char *nptr)
 	return (res * sgn);
 }
 
-int		verify_number(char *nptr)
+int	verify_number(char *nptr)
 {
 	int		i;
 	int		sgn;
@@ -86,13 +86,13 @@ int		verify_number(char *nptr)
 	}
 	if ((res > 2147483647 && sgn == 1) || (res < -2147483648 && sgn == -1))
 		return (0);
-	return (1);	
+	return (1);
 }
 
 void	create_last_node(int data, t_struct **head)
 {
-	t_struct *new_node;
-	t_struct *tmp;
+	t_struct	*new_node;
+	t_struct	*tmp;
 
 	new_node = malloc(sizeof(t_struct));
 	if (!new_node)
@@ -102,7 +102,7 @@ void	create_last_node(int data, t_struct **head)
 	if (!*head)
 	{
 		*head = new_node;
-		return;
+		return ;
 	}
 	tmp = *head;
 	while (tmp->next)
@@ -112,11 +112,11 @@ void	create_last_node(int data, t_struct **head)
 
 void	create_first_node(int data, t_struct **head)
 {
-	t_struct *tmp;
+	t_struct	*tmp;
 
 	tmp = malloc(sizeof(t_struct));
 	if (!tmp)
-		return;
+		return ;
 	tmp->data = data;
 	tmp->next = *head;
 	*head = tmp;
@@ -141,7 +141,7 @@ int	verif_struct(t_struct **head)
 		tmp1 = tmp1->next;
 	}
 	tmp1 = *head;
-	return (0);	
+	return (0);
 }
 
 int	is_num(char *str)
@@ -166,24 +166,24 @@ int	is_char_num(char c)
 {
 	if ((c >= '0' && c <= '9') || c == '-' || c == '+')
 		return (1);
-	return (0);	
+	return (0);
 }
 
-int		isstrnum(char *str)
+int	isstrnum(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] != ' ' || !is_char_num(str[i]))
-			return 0;
+		if (str[i] != ' ' && !is_char_num(str[i]))
+			return (0);
 		i ++;
 	}
 	return (1);
 }
 
-void	fill_list_str(char *str, t_struct **head)
+int	fill_list_str(char *str, t_struct **head)
 {
 	int	i;
 
@@ -191,20 +191,20 @@ void	fill_list_str(char *str, t_struct **head)
 	while (str[i] == ' ')
 		i ++;
 	if (!isstrnum(str))
-	{
-		write(2, "Error\n", 6);
-		return ;	
-	}
+		return (0);
 	while (str[i])
 	{
 		if (!verify_number(&str[i]))
-			return ;		
+			return (0);
 		create_last_node(ft_atoi(&str[i]), head);
 		while (is_char_num(str[i]))
 			i ++;
 		while (str[i] == ' ')
 			i ++;
 	}
+	if (verif_struct(head))
+		return (0);
+	return (1);
 }
 
 // remplis la liste avec les elements donnes et verifie les doublons etc
@@ -213,13 +213,8 @@ int	fill_list(int argc, char **argv, t_struct **head)
 	int	i;
 
 	i = 0;
-	if (argc < 2)
+	if (argc < 3)
 		return (0);
-	if (argc == 2)
-	{
-		fill_list_str(argv[1], head);
-		return (1);
-	}
 	while (i < argc - 1)
 	{
 		if (is_num(argv[i + 1]) && verify_number(argv[i + 1]))
@@ -234,7 +229,7 @@ int	fill_list(int argc, char **argv, t_struct **head)
 }
 
 // retourne le nombre de noeuds d'une strucure
-int		count_nodes(t_struct *head)
+int	count_nodes(t_struct *head)
 {
 	int										i;
 
@@ -248,16 +243,16 @@ int		count_nodes(t_struct *head)
 }
 
 // affiche une liste pour test
-void	print_list(t_struct *head)
-{
-	printf("\n////////////////////DEBUT////////////////////\n\n");
-	while (head)
-	{
-		printf("valeur position %d = %d\n", get_pos(head, head->data), head->data);
-		head = head->next;
-	}
-	printf("\n/////////////////////FIN/////////////////////\n\n");
-}
+// void	print_list(t_struct *head)
+// {
+// 	printf("\n////////////////////DEBUT////////////////////\n\n");
+// 	while (head)
+// 	{
+// 		printf("valeur pos %d = %d\n", get_pos(head, head->data), head->data);
+// 		head = head->next;
+// 	}
+// 	printf("\n/////////////////////FIN/////////////////////\n\n");
+// }
 
 // trie une liste de 2 ou 3 elements seulement
 void	ft_sort_three(t_struct **stack)
@@ -294,9 +289,8 @@ void	sort_3(t_struct **stack, int len)
 		ft_sort_three(stack);
 }
 
-
 // retourne 0 si la liste n'est pas triee, 1 si elle l'est deja
-int		is_sorted(t_struct *head)
+int	is_sorted(t_struct *head)
 {
 	while (head && head->next)
 	{
@@ -304,13 +298,13 @@ int		is_sorted(t_struct *head)
 			return (0);
 		head = head->next;
 	}
-	return (1);	
+	return (1);
 }
 
 // retourne le data min contenu dans la structure
-int		get_min(t_struct *head)
+int	get_min(t_struct *head)
 {
-	int 		min;
+	int		min;
 
 	min = head->data;
 	while (head)
@@ -323,22 +317,22 @@ int		get_min(t_struct *head)
 }
 
 // retourne le data max contenu dans la structure
-int		get_max(t_struct *head)
+int	get_max(t_struct *head)
 {
-	int 		max;
+	int		max;
 
-	max = head->data;	
+	max = head->data;
 	while (head)
 	{
 		if (head->data > max)
 			max = head->data;
 		head = head->next;
 	}
-	return (max);		
+	return (max);
 }
 
 // retourne 1 si data est le min de head, 2 si data est le max de head, 0 sinon 
-int		is_new_max_or_min(int data, t_struct *head)
+int	is_new_max_or_min(int data, t_struct *head)
 {
 	if (data < get_min(head))
 		return (1);
@@ -348,7 +342,7 @@ int		is_new_max_or_min(int data, t_struct *head)
 }
 
 // renvoie la plus grande valeur inferieure a data contenue dans head
-int		get_higher_min(int	data, t_struct *s2)
+int	get_higher_min(int data, t_struct *s2)
 {
 	int	res;
 
@@ -362,7 +356,7 @@ int		get_higher_min(int	data, t_struct *s2)
 	return (res);
 }
 
-int		get_lower_max(int data, t_struct *s2)
+int	get_lower_max(int data, t_struct *s2)
 {
 	int	res;
 
@@ -376,61 +370,61 @@ int		get_lower_max(int data, t_struct *s2)
 	return (res);
 }
 
-int		is_under(int len, int indice)
+int	is_under(int len, int indice)
 {
 	if (indice <= len / 2)
 		return (1);
-	return (0);	
+	return (0);
 }
 
-int		is_over(int len, int indice)
+int	is_over(int len, int indice)
 {
 	if (indice > len / 2)
 		return (1);
-	return (0);	
+	return (0);
 }
 
-int		cmp_int(int index_1, int index_2)
+int	cmp_int(int index_1, int index_2)
 {
 	if (index_1 > index_2)
 		return (index_1);
 	return (index_2);
 }
 
-int		cmp_min_int(int index_1, int index_2)
+int	cmp_min_int(int index_1, int index_2)
 {
 	if (index_1 > index_2)
 		return (index_2);
 	return (index_1);
 }
 
-int		under(int size_s1, int size_s2, int	hunter, int target)
+int	under(int size_s1, int size_s2, int hntr, int trg)
 {
-	if ((is_under(size_s1, hunter) && is_under(size_s2, target)) 
-		|| (is_under(size_s1, hunter) && is_over(size_s2, target)
-		&& cmp_int(hunter, target) <= cmp_int(size_s1 - hunter, size_s2 - target)
-		&& cmp_int(hunter, target) <= size_s2 - target + hunter)
-		|| (is_under(size_s2, target) && is_over(size_s1, hunter)
-		&& cmp_int(hunter, target) <= cmp_int(size_s1 - hunter, size_s2 - target)
-		&& cmp_int(hunter, target) <= size_s1 - hunter + target))
-		return(cmp_int(hunter, target) + 1);
+	if ((is_under(size_s1, hntr) && is_under(size_s2, trg))
+		|| (is_under(size_s1, hntr) && is_over(size_s2, trg)
+			&& cmp_int(hntr, trg) <= cmp_int(size_s1 - hntr, size_s2 - trg)
+			&& cmp_int(hntr, trg) <= size_s2 - trg + hntr)
+		|| (is_under(size_s2, trg) && is_over(size_s1, hntr)
+			&& cmp_int(hntr, trg) <= cmp_int(size_s1 - hntr, size_s2 - trg)
+			&& cmp_int(hntr, trg) <= size_s1 - hntr + trg))
+		return (cmp_int(hntr, trg) + 1);
 	return (0);
 }
 
-int		over(int size_s1, int size_s2, int	hunter, int target)
+int	over(int size_s1, int size_s2, int hntr, int trg)
 {
-	if ((is_over(size_s1, hunter) && is_over(size_s2, target)) 
-		|| (is_under(size_s1, hunter) && is_over(size_s2, target)
-		&& cmp_int(hunter, target) >= cmp_int(size_s1 - hunter, size_s2 - target)
-		&& cmp_int(size_s1 - hunter, size_s2 - target) <= size_s2 - target + hunter)
-		|| (is_under(size_s2, target) && is_over(size_s1, hunter)
-		&& cmp_int(hunter, target) >= cmp_int(size_s1 - hunter, size_s2 - target)
-		&& cmp_int(size_s1 - hunter, size_s2 - target) <= size_s1 - hunter + target))
-		return(cmp_int(size_s1 - hunter, size_s2 - target) + 1);
+	if ((is_over(size_s1, hntr) && is_over(size_s2, trg))
+		|| (is_under(size_s1, hntr) && is_over(size_s2, trg)
+			&& cmp_int(hntr, trg) >= cmp_int(size_s1 - hntr, size_s2 - trg)
+			&& cmp_int(size_s1 - hntr, size_s2 - trg) <= size_s2 - trg + hntr)
+		|| (is_under(size_s2, trg) && is_over(size_s1, hntr)
+			&& cmp_int(hntr, trg) >= cmp_int(size_s1 - hntr, size_s2 - trg)
+			&& cmp_int(size_s1 - hntr, size_s2 - trg) <= size_s1 - hntr + trg))
+		return (cmp_int(size_s1 - hntr, size_s2 - trg) + 1);
 	return (0);
 }
 
-int		get_number_shot(int size_s1, int size_s2, int	hunter, int target)
+int	get_number_shot(int size_s1, int size_s2, int hunter, int target)
 {
 	int		shot;
 
@@ -463,7 +457,8 @@ void	find_hunter_and_target(t_struct *s1, t_struct *s2, int *targets)
 		if (!i && !get_pos(s2, targets[1]) && !targets[2])
 			shot_tmp = 1;
 		else
-			shot_tmp = get_number_shot(count_nodes(s1) + i, count_nodes(s2), i, get_pos(s2, target));
+			shot_tmp = get_number_shot(count_nodes(s1) + i,
+					count_nodes(s2), i, get_pos(s2, target));
 		if (shot_tmp < targets[2] || !targets[2])
 		{
 			targets[0] = s1->data;
@@ -513,25 +508,25 @@ void	a(t_struct **head, int value, int i)
 void	push_to_s2(t_struct **s1, t_struct **s2, int targets[3])
 {
 	if (under(count_nodes(*s1), count_nodes(*s2),
-		get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
+			get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
 	{
 		while (get_pos(*s1, targets[0]) && get_pos(*s2, targets[1]))
 			rr(s1, s2);
 	}
-	else if	(over(count_nodes(*s1), count_nodes(*s2),
-	get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
+	else if (over(count_nodes(*s1), count_nodes(*s2),
+			get_pos(*s1, targets[0]), get_pos(*s2, targets[1])))
 	{
 		while (get_pos(*s1, targets[0]) && get_pos(*s2, targets[1]))
 			r_rr(s1, s2);
 	}
-	while(get_pos(*s1, targets[0]))
+	while (get_pos(*s1, targets[0]))
 	{
 		if (get_pos(*s1, targets[0]) <= count_nodes(*s1) / 2)
 			r(s1, 0);
 		else
 			r_r(s1, 0);
 	}
-	while(get_pos(*s2, targets[1]))
+	while (get_pos(*s2, targets[1]))
 	{
 		if (get_pos(*s2, targets[1]) <= count_nodes(*s2) / 2)
 			r(s2, 1);
@@ -543,7 +538,7 @@ void	push_to_s2(t_struct **s1, t_struct **s2, int targets[3])
 
 void	reverse_sort_to_b(t_struct **s1, t_struct **s2)
 {
-	int 		targets[3];
+	int	targets[3];
 
 	init_target(&targets[0]);
 	find_hunter_and_target(*s1, *s2, &targets[0]);
@@ -553,6 +548,7 @@ void	reverse_sort_to_b(t_struct **s1, t_struct **s2)
 void	final_placement(t_struct **s1, t_struct **s2)
 {
 	int			target;
+
 	while (*s2)
 	{
 		if (is_new_max_or_min((*s2)->data, *s1))
@@ -566,9 +562,6 @@ void	final_placement(t_struct **s1, t_struct **s2)
 
 void	sort_list(t_struct **head, t_struct **s2)
 {
-	//int										i;
-
-	//i = 0;
 	if (!is_sorted(*head))
 	{
 		if (count_nodes(*head) < 4)
@@ -583,7 +576,7 @@ void	sort_list(t_struct **head, t_struct **s2)
 			get_in_top(s2, get_max(*s2), 1);
 			final_placement(head, s2);
 			get_in_top(head, get_min(*head), 0);
-		}	
+		}
 	}
 }
 
@@ -599,10 +592,13 @@ void	free_list(t_struct **head)
 	}
 }
 
-void	FT_PUSHSWAP(int argc, char **argv)
+void	ft_pushswap(int argc, char **argv)
 {
-	t_struct *head = NULL;
-	t_struct *s2 = NULL;
+	t_struct	*head;
+	t_struct	*s2;
+
+	head = NULL;
+	s2 = NULL;
 	if (fill_list(argc, argv, &head))
 		sort_list(&head, &s2);
 	else
@@ -610,8 +606,7 @@ void	FT_PUSHSWAP(int argc, char **argv)
 	free_list(&head);
 }
 
-
 int	main(int argc, char **argv)
 {
-	FT_PUSHSWAP(argc, argv);
+	ft_pushswap(argc, argv);
 }
