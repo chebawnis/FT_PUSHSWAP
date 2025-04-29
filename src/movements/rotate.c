@@ -6,7 +6,7 @@
 /*   By: adichou <adichou@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 16:21:24 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/26 01:49:03 by adichou          ###   ########.fr       */
+/*   Updated: 2025/04/29 19:28:21 by adichou          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	rotate(t_struct **head)
 	t_struct								*tmp;
 
 	if (*head == NULL || (*head)->next == NULL)
-		return;
+		return ;
 	first = *head;
 	*head = first->next;
 	first->next = NULL;
