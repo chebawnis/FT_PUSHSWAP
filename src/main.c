@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 07:40:58 by adichou           #+#    #+#             */
-/*   Updated: 2025/04/29 03:56:31 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/29 04:10:57 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -587,7 +587,17 @@ void	sort_list(t_struct **head, t_struct **s2)
 	}
 }
 
+void	free_list(t_struct **head)
+{
+	t_struct		*tmp;
 
+	while (*head)
+	{
+		tmp = (*head)->next;
+		free (*head);
+		*head = tmp;
+	}
+}
 
 void	FT_PUSHSWAP(int argc, char **argv)
 {
@@ -597,7 +607,7 @@ void	FT_PUSHSWAP(int argc, char **argv)
 		sort_list(&head, &s2);
 	else
 		write(2, "Error\n", 6);
-	// free_list(head);
+	free_list(&head);
 }
 
 
